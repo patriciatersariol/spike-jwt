@@ -1,11 +1,12 @@
 ### Request 1
-GET http://localhost:3000/posts
-
+GET http://localhost:9000/page
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1QGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiMTIzNCIsImlhdCI6MTYzNjM5MDQ4MH0.GexSS-2IFqA2tEJWqctMIUaup0xDeV4Vq9zx9LMjuKA
 ###
 
-POST http://localhost:3000/login
+POST http://localhost:9000/login
 Content-Type: application/json
 
 {
-    "username": "Bianca"
+    "email": "ju@gmail.com",
+    "password": "1234"
 }
