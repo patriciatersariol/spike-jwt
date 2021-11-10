@@ -15,17 +15,26 @@ app.use(cors({ origin: "*" }))
 // })
 
 app.post("/login", generateToken)
-app.get("/validacao", authenticateToken)
+app.get("/hiring-process", authenticateToken, (req, res) => {
+  res.json(["banana", "maçã"])
+})
 
-function authenticateToken(req, res) {
+function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"]
   const token = authHeader && authHeader.split(" ")[1]
-  if (token === null) return res.sendStatus(401)
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) return res.sendStatus(401)
-    return !err
-  })
+  const verified = jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET,
+    (err, decoded) => {
+      if (err) return res.json(err)
+      return !err
+    }
+  )
+  if (verified) {
+    next()
+  }
+  return res.sendStatus(401).json({ auth: "failed" })
 }
 
 function generateToken(req, res) {
