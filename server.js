@@ -10,6 +10,7 @@ app.use(express.json())
 app.use(cors({ origin: "*" }))
 
 app.post("/login", generateToken)
+
 app.get("/hiring-process", authenticateToken, (req, res) => {
   res.json([
     {
@@ -31,22 +32,26 @@ function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"]
   const token = authHeader && authHeader.split(" ")[1]
 
-  const verified = jwt.verify(
+  const isAuthenticated = jwt.verify(
     token,
     process.env.ACCESS_TOKEN_SECRET,
-    (err, decoded) => {
-      if (err) return res.json(err)
+    (err) => {
       return !err
     }
   )
-  if (verified) {
+  if (isAuthenticated) {
     next()
+  } else {
+    return res.sendStatus(401).json({ auth: "failed" })
   }
-  return res.sendStatus(401).json({ auth: "failed" })
 }
 
 function generateToken(req, res) {
-  const userAdmin = { email: "ju@gmail.com", password: 1234 }
+  const userAdmin = {
+    name: "Juliane Martins",
+    email: "ju@gmail.com",
+    password: 1234
+  }
   const user = { email: req.body.email, password: req.body.password }
 
   if (user.email != userAdmin.email || user.password != userAdmin.password) {
@@ -56,10 +61,12 @@ function generateToken(req, res) {
     })
   }
 
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+  const payload = { name: userAdmin.name, email: userAdmin.email }
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET)
   return res.json({
     auth: true,
-    accessToken: accessToken
+    accessToken: accessToken,
+    user: payload
   })
 }
 
